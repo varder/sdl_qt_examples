@@ -126,9 +126,11 @@ endif()
 # link
 # ******************************************************************************
 target_link_libraries(${PROJECT_NAME} PUBLIC Qt5::Core PUBLIC Qt5::Widgets PUBLIC Qt5::Gui PUBLIC Qt5::Quick PUBLIC Qt5::Qml PUBLIC Qt5::Concurrent
-                                SDL2 SDL2main SDL2_ttf)
+                                SDL2 SDL2_ttf )
 
 
+                            option(SDL_MAIN_NEEDED OFF)
+                            set(SDL_MAIN_AVAILABLE ON)
 set(SDL_DIR "${CMAKE_SOURCE_DIR}/deps/SDL2")
 message("got sdl dir " ${BUILD_DIR})
 #file (COPY ${SDL_DIR}/lib/x64/SDL2.lib

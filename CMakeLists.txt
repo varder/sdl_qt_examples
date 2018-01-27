@@ -126,20 +126,34 @@ endif()
 # link
 # ******************************************************************************
 target_link_libraries(${PROJECT_NAME} PUBLIC Qt5::Core PUBLIC Qt5::Widgets PUBLIC Qt5::Gui PUBLIC Qt5::Quick PUBLIC Qt5::Qml PUBLIC Qt5::Concurrent
-                                SDL2 SDL2main)
+                                SDL2 SDL2main SDL2_ttf)
 
 
 set(SDL_DIR "${CMAKE_SOURCE_DIR}/deps/SDL2")
 message("got sdl dir " ${BUILD_DIR})
-file (COPY ${SDL_DIR}/lib/x64/SDL2.lib
-     DESTINATION "${SDL_DIR}"
-     )
+#file (COPY ${SDL_DIR}/lib/x64/SDL2.lib
+#     DESTINATION "${SDL_DIR}"
+#     )
 file (COPY "${SDL_DIR}/lib/x64/SDL2.dll"
+  DESTINATION "${BUILD_DIR}/"
+  )
+file (COPY "${SDL_DIR}/lib/x64/SDL2.lib"
   DESTINATION "${BUILD_DIR}/"
   )
 file (COPY "${SDL_DIR}/lib/x64/SDL2main.lib"
   DESTINATION "${BUILD_DIR}/"
   )
+
+
+ file (COPY "${SDL_DIR}/lib/x64/SDL2_ttf.dll" "${SDL_DIR}/lib/x64/SDL2_ttf.lib"
+   DESTINATION "${BUILD_DIR}/"
+   )
+
+file (COPY "${SDL_DIR}/lib/x64/SDL2_ttf.dll" "${SDL_DIR}/lib/x64/SDL2_ttf.lib"
+  DESTINATION "${CMAKE_BINARY_DIR}/"
+  )
+
+
 
 include_directories("${SDL_DIR}/include")
 

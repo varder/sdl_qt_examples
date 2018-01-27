@@ -6,6 +6,7 @@
 #define JEOMETRY_TEST_LTEXTURE_H
 
 #include <SDL.h>
+#include <SDL_ttf.h>
 #include <string>
 class LTexture
 {
@@ -85,6 +86,40 @@ public:
         SDL_RenderCopyEx( gRenderer, mTexture, clip, &renderQuad, angle, center, flip );
     }
 
+    bool loadFromRenderedText(SDL_Renderer* gRenderer, std::string textureText, SDL_Color textColor, TTF_Font *gFont)
+    {
+        //Get rid of preexisting texture
+        free();
+
+        //Render text surface
+        SDL_Surface* textSurface = TTF_RenderText_Solid(gFont, textureText.c_str(), textColor );
+        if( textSurface == NULL )
+        {
+            printf( "Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError() );
+        }
+        else
+        {
+            //Create texture from surface pixels
+            mTexture = SDL_CreateTextureFromSurface( gRenderer, textSurface );
+            if( mTexture == NULL )
+            {
+                printf( "Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError() );
+            }
+            else
+            {
+                //Get image dimensions
+                mWidth = textSurface->w;
+                mHeight = textSurface->h;
+            }
+
+            //Get rid of old surface
+            SDL_FreeSurface( textSurface );
+        }
+
+        //Return success
+        return mTexture != NULL;
+    }
+
 private:
     //The actual hardware texture
     SDL_Texture* mTexture = nullptr;
@@ -93,5 +128,14 @@ private:
     int mWidth = 0;
     int mHeight = 0;
 };
+
+
+
+void renderPrimitives(SDL_Renderer *gRenderer, int width, int height);
+
+SDL_Texture* loadTexture(SDL_Renderer *renderor, std::string path);
+
+
+void updateSize(SDL_Surface* surface, int w, int h);
 
 #endif //JEOMETRY_TEST_LTEXTURE_H

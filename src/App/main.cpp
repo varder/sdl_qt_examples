@@ -12,20 +12,80 @@
 #include "LTexture.h"
 #include <SDL_ttf.h>
 
+#include <QImage>
+
 
 
 static int renderFunction(void *data){
     SDL_Window *window = static_cast<SDL_Window*>(data);
     SDL_Renderer* gRenderer = SDL_CreateRenderer(window, -1, 0);
 
+    SDL_Texture* tx[2];
     SDL_Texture* texture = loadTexture(gRenderer, "car.bmp");
+    tx[0] = loadTexture(gRenderer, "car.bmp");
+    tx[1] = loadTexture(gRenderer, "bg.bmp");
 
-    SDL_SetRenderDrawColor(gRenderer, 0xff, 0x00, 0x00, 0xff);
-    SDL_RenderCopy(gRenderer, texture, nullptr, nullptr);
+    int pitch = 600;
+    char *pixels;
+
+    SDL_Texture *sTexture = SDL_CreateTexture(gRenderer, SDL_PIXELFORMAT_YUY2, SDL_TEXTUREACCESS_STREAMING, 920, 520);
+//    SDL_SetRenderDrawColor(gRenderer, 0xff, 0xff, 0xff, 0xff);
+
+    int ret = SDL_LockTexture(sTexture, nullptr, (void**)&pixels, &pitch);
+    qDebug() << "created texture " << sTexture << pitch << ret << (int)pixels << QString(SDL_GetError());
+    memset(pixels, std::rand()/255, 800);
+    SDL_UnlockTexture(sTexture);
+
+//    SDL_RenderCopy(gRenderer, sTexture, nullptr, nullptr);
     SDL_RenderPresent(gRenderer);
 
+    SDL_Rect clipRect{0,0,920,780};
+
+    int* pData =  static_cast<int*> ( malloc( clipRect.w * clipRect.h * 4 ) );
+    SDL_QueryTexture(texture, NULL, pData, &clipRect.w, &clipRect.h);
+//    int w = 1840;
+    for(;;){
 
 
+    static int frm = 0;
+    frm ^=1;
+
+//    SDL_LockTexture(sTexture, nullptr, (void**)&pixels, &pitch);
+//    memset(pixels, std::rand()/255, 800);
+//    SDL_UnlockTexture(sTexture);
+    SDL_RenderClear(gRenderer);
+    SDL_RenderCopy(gRenderer, tx[frm], nullptr, nullptr);
+//    SDL_RenderCopy(gRenderer, sTexture, NULL, NULL);
+    renderPrimitives(gRenderer, 500, 500);
+    SDL_RenderPresent(gRenderer);
+
+    SDL_RenderReadPixels(gRenderer, 0, 0, pData, clipRect.w*4);
+    qDebug() << "got pdata " << pData << clipRect.w << clipRect.h << pData[0] << pData[100];
+    static int cr = 0;
+    if(++cr==800){
+        cr -=cr+1;
+
+//        SDL_RenderReadPixels(gRenderer, 0, 0, pData, clipRect.w);
+
+        QImage yuvImage = QImage((uchar*)pData,
+                        920,
+                        520,
+                        QImage::Format_RGB32);
+
+        QVector<QRgb> m_colourMap;
+        for(int i = 0; i < 256; i++)
+        {
+            m_colourMap.push_back(qRgb(i, i, i));
+        }
+        yuvImage.setColorTable(m_colourMap);
+
+        yuvImage.save("test.jpg");
+    }
+        SDL_Delay(30);
+    }
+
+
+return 0;
     LTexture tex;
     tex.loadFromFile(gRenderer, "car.bmp");
     tex.setBlendMode( SDL_BLENDMODE_BLEND );

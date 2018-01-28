@@ -155,6 +155,8 @@ file (COPY "${SDL_DIR}/lib/x64/SDL2_ttf.dll" "${SDL_DIR}/lib/x64/SDL2_ttf.lib"
   DESTINATION "${CMAKE_BINARY_DIR}/"
   )
 
+#add_subdirectory(deps)
+
 
 
 include_directories("${SDL_DIR}/include")

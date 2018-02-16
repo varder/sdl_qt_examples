@@ -120,8 +120,8 @@ void affineVec2(vec2 &v){
     v = {5.f*v.x+3.f*v.y, 0.f*v.x+5.f*v.y};
 }
 
-vec2 getAffineVec2(vec2 &v){
-    return {5.f*v.x+3.f*v.y, 0.f*v.x+5.f*v.y};
+vec2 getAffineVec2(vec2 v){
+    return {5.f*v.x+3.f*v.y, 0.2f*v.x+5.f*v.y};
 }
 
 void renderObject1(SDL_Renderer *gRenderer, float x = 100.f, float y =100.f, float scale=1.0f, float rot=0){
@@ -318,7 +318,7 @@ void renderPrimitives(SDL_Renderer *gRenderer, int width, int height){
 //    SDL_SetRenderDrawColor(gRenderer, 0x88, 0xaa, 0xaa, 0xff);
 //    SDL_RenderFillRect(gRenderer, &rect);
 
-    for(float y=0.f;y<600.f;y=y+10.f){
+    for(int y=0;y<600;y=y+10){
 //        SDL_RenderDrawLine( gRenderer, 0, x, x, 200);
         vec2 x1 = {0.f,y};
         vec2 x2 = {100.f,y};
@@ -337,6 +337,7 @@ void renderPrimitives(SDL_Renderer *gRenderer, int width, int height){
         x2 = getAffineVec2(x2);
         y1 = getAffineVec2(y1);
         y2 = getAffineVec2(y2);
+//        affineVec2(x1);
 //        affineVec2(x2);
 //        affineVec2(y1);
 //        affineVec2(y2);

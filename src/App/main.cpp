@@ -1,176 +1,69 @@
+#undef main
+#include <iostream>
+using std::cin;
+using std::endl;
+using std::cout;
 
-#include <QGuiApplication>
-
-#include <qqmlengine.h>
-#include <qqmlcontext.h>
-#include <qqml.h>
-#include <QtQuick/qquickitem.h>
-#include <QtQuick/qquickview.h>
-
-
+#include <cmath>
 #include <SDL.h>
-#include "LTexture.h"
-#include <SDL_ttf.h>
 
-#include <QImage>
+const int SCREEN_WIDTH = 640;
+const int SCREEN_HEIGHT = 480;
 
+void drawTriangle(int a, int b, int c, SDL_Renderer *renderer);
 
+int main1(int argc, char *args[])
+{
+    SDL_Window *gWindow = NULL;
+    SDL_Renderer *gRenderer = NULL;
 
-static int renderFunction(void *data){
-    SDL_Window *window = static_cast<SDL_Window*>(data);
-    SDL_Renderer* gRenderer = SDL_CreateRenderer(window, -1, 0);
+    int a = 0,  b =0, c=30;
 
-    SDL_Texture* tx[2];
-    SDL_Texture* texture = loadTexture(gRenderer, "car.bmp");
-    tx[0] = loadTexture(gRenderer, "car.bmp");
-    tx[1] = loadTexture(gRenderer, "bg.bmp");
+//    cin >> a >> b >> c;
 
-    int pitch = 600;
-    char *pixels;
-
-    SDL_Texture *sTexture = SDL_CreateTexture(gRenderer, SDL_PIXELFORMAT_YUY2, SDL_TEXTUREACCESS_STREAMING, 920, 520);
-//    SDL_SetRenderDrawColor(gRenderer, 0xff, 0xff, 0xff, 0xff);
-
-    int ret = SDL_LockTexture(sTexture, nullptr, (void**)&pixels, &pitch);
-    qDebug() << "created texture " << sTexture << pitch << ret << (int)pixels << QString(SDL_GetError());
-    memset(pixels, std::rand()/255, 800);
-    SDL_UnlockTexture(sTexture);
-
-//    SDL_RenderCopy(gRenderer, sTexture, nullptr, nullptr);
-    SDL_RenderPresent(gRenderer);
-
-    SDL_Rect clipRect{0,0,920,780};
-
-    int* pData =  static_cast<int*> ( malloc( clipRect.w * clipRect.h * 4 ) );
-    SDL_QueryTexture(texture, NULL, pData, &clipRect.w, &clipRect.h);
-//    int w = 1840;
-    for(;;){
-
-
-    static int frm = 0;
-    frm ^=1;
-
-//    SDL_LockTexture(sTexture, nullptr, (void**)&pixels, &pitch);
-//    memset(pixels, std::rand()/255, 800);
-//    SDL_UnlockTexture(sTexture);
-    SDL_RenderClear(gRenderer);
-    SDL_RenderCopy(gRenderer, tx[frm], nullptr, nullptr);
-//    SDL_RenderCopy(gRenderer, sTexture, NULL, NULL);
-    renderPrimitives(gRenderer, 500, 500);
-    SDL_RenderPresent(gRenderer);
-
-    SDL_RenderReadPixels(gRenderer, 0, 0, pData, clipRect.w*4);
-    qDebug() << "got pdata " << pData << clipRect.w << clipRect.h << pData[0] << pData[100];
-    static int cr = 0;
-    if(++cr==800){
-        cr -=cr+1;
-
-//        SDL_RenderReadPixels(gRenderer, 0, 0, pData, clipRect.w);
-
-        QImage yuvImage = QImage((uchar*)pData,
-                        920,
-                        520,
-                        QImage::Format_RGB32);
-
-        QVector<QRgb> m_colourMap;
-        for(int i = 0; i < 256; i++)
+    if (SDL_Init(SDL_INIT_EVERYTHING) >= 0)
+    {
+        gWindow = SDL_CreateWindow("tesT", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+        if (gWindow != NULL)
         {
-            m_colourMap.push_back(qRgb(i, i, i));
-        }
-        yuvImage.setColorTable(m_colourMap);
+            gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
+            if (gRenderer != NULL)
+            {
+                bool bRunning = true;
+                SDL_Event e;
+                while (bRunning)
+                {
+                    SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
+                    SDL_RenderClear(gRenderer);
 
-        yuvImage.save("test.jpg");
-    }
-        SDL_Delay(30);
-    }
+                    while (SDL_PollEvent(&e) != 0)
+                    if (e.type == SDL_QUIT)
+                        bRunning = false;
 
+                    SDL_SetRenderDrawColor(gRenderer, 122, 134, 212, 255);
+                    drawTriangle(a, b, c, gRenderer);
+                    SDL_RenderPresent(gRenderer);
+                }
+                SDL_DestroyWindow(gWindow);
+                SDL_DestroyRenderer(gRenderer);
 
-return 0;
-    LTexture tex;
-    tex.loadFromFile(gRenderer, "car.bmp");
-    tex.setBlendMode( SDL_BLENDMODE_BLEND );
+                gWindow = NULL;
+                gRenderer = NULL;
 
-    TTF_Font *gFont = TTF_OpenFont( "lazy.ttf", 58 );
-
-    LTexture fontTex;
-    SDL_Color textColor = { 255, 255, 255};
-    if( !fontTex.loadFromRenderedText(gRenderer, "The quick brown fox jumps over the lazy dog", textColor, gFont) )
-        printf( "Failed to render text texture!\n" );
-
-
-
-
-     SDL_Event e;
-     Uint8 r,g,b; r=g=b=0;
-    while(true){
-//        qDebug() << "video thread function " << data;
-
-        SDL_PollEvent(&e);
-        if(e.type==SDL_KEYDOWN){
-            switch (e.key.keysym.sym) {
-            case SDLK_q:
-                r+=32;
-                break;
-            case SDLK_w:
-                g+=32;
-                break;
-            case SDLK_e:
-                b+=4;
-                qDebug() << "on kegy pressed " << b;
-                break;
-            default:
-                break;
+                SDL_Quit();
             }
         }
-//        tex.setColor(r, g, b);
-//        tex.setAlpha( b );
-
-        SDL_Rect rect = {0,20, 400,300};
-        SDL_Point point = {50, 200};
-
-        tex.renderFlip(gRenderer, 100, 200, &rect, 0., &point, SDL_FLIP_VERTICAL);
-//        tex.render(gRenderer, 10, 10);
-
-        renderPrimitives(gRenderer, 500, 500);
-        fontTex.render(gRenderer, 40, 40);
-        SDL_RenderPresent(gRenderer);
-
-
-        SDL_Delay(40);
     }
+
 
     return 0;
 }
 
-int main(int argc, char ** argv)
+void drawTriangle(int a, int b, int c, SDL_Renderer *renderer)
 {
-    QGuiApplication app(argc, argv);
+    double angA = 1 / cos((a*a - b*b - c*c) / 2 * b * c);
+    double angB = 1 / cos((b*b - a*a - c*c) / 2 * a * c);
+    double angC = 1 / cos((c*c - a*a - b*b) / 2 * a * b);
 
-    SDL_Init(SDL_INIT_VIDEO);
-    TTF_Init();
-    QWindow view;
-    view.setVisible(true);
-    view.setGeometry(500,500, 1500, 1400);
-
-    QWindow *cwindow = new QWindow(&view);
-    cwindow->setGeometry(0,0,600,500);
-    cwindow->setVisible(true);
-    cwindow->setFlags(Qt::WindowTransparentForInput);
-//    view.setFlags(Qt::WindowTransparentForInput);
-    SDL_Window* window = SDL_CreateWindowFrom((void*)cwindow->winId());
-
-    SDL_Thread *renderThread  = SDL_CreateThread(renderFunction, "Test Render ", (void*)window);
-
-
-//    SDL_Surface* screenSurface = SDL_GetWindowSurface(window);
-//    SDL_SetRenderDrawColor(gRenderer, 255, 0, 0, 255);
-//    SDL_RenderFillRect(gRenderer, NULL);
-//    SDL_RenderPresent(gRenderer);
-
-
-//    QQmlContext *ctxt = view.rootContext();
-//    view.show();
-
-    return app.exec();
+    // ?
 }
-

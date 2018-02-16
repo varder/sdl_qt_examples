@@ -12,6 +12,7 @@ class LTexture
 {
 public:
     //Initializes variables
+
     LTexture(){
 
     }
@@ -132,6 +133,8 @@ private:
 
 
 void renderPrimitives(SDL_Renderer *gRenderer, int width, int height);
+void renderObject(SDL_Renderer *gRenderer );
+void renderObject1(SDL_Renderer *gRenderer, float x,float y, float scale, float rot);
 
 SDL_Texture* loadTexture(SDL_Renderer *renderor, std::string path);
 

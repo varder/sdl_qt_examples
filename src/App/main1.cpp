@@ -49,8 +49,20 @@ static int renderFunction(void *data){
                 break;
             case SDLK_w:
                 g+=32;
+                y-=5;
+                break;
+            case SDLK_d:
                 x+=5;
+                break;
+            case SDLK_s:
                 y+=5;
+                break;
+            case SDLK_a:
+                x-=5;
+                break;
+            case SDLK_t:
+                x-=5;
+                y-=5;
                 break;
             case SDLK_e:
                 b+=4;
@@ -61,10 +73,12 @@ static int renderFunction(void *data){
                 break;
             }
         }
-//        SDL_RenderClear(gRenderer);
+//        SDL_FillRect(gRenderer, NULL, 0x000000);
+        SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0x00);
+        SDL_RenderClear(gRenderer);
          renderPrimitives(gRenderer, 500, 500);
-        SDL_Rect rect = {0,20, 400,300};
-        SDL_Point point = {50, 200};
+//        SDL_Rect rect = {0,20, 400,300};
+//        SDL_Point point = {50, 200};
 
 
 
@@ -74,7 +88,7 @@ static int renderFunction(void *data){
         SDL_RenderPresent(gRenderer);
 
 
-        SDL_Delay(40);
+        SDL_Delay(20);
 //        SDL_RenderClear(gRenderer);
     }
 

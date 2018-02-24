@@ -117,7 +117,7 @@ static  vec2 scaleF(vec2 point, float factor){
     };
 }
 void affineVec2(vec2 &v){
-    v = {5.f*v.x+3.f*v.y, 0.f*v.x+5.f*v.y};
+    v = {5.f*v.x+3.f*v.y, 0.2f*v.x+5.f*v.y};
 }
 
 vec2 getAffineVec2(vec2 v){
@@ -311,26 +311,22 @@ void renderPrimitives(SDL_Renderer *gRenderer, int width, int height){
     //    SDL_RenderClear(gRenderer);
     //        SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
 
-//    SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xff);
-//    SDL_Rect rect = {50, 50, 100, 100};
+    SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0x00);
+    SDL_Rect rect = {50, 50, 100, 100};
 //    SDL_RenderDrawRect(gRenderer, &rect);
 
 //    SDL_SetRenderDrawColor(gRenderer, 0x88, 0xaa, 0xaa, 0xff);
 //    SDL_RenderFillRect(gRenderer, &rect);
 
     for(int y=0;y<600;y=y+10){
-//        SDL_RenderDrawLine( gRenderer, 0, x, x, 200);
         vec2 x1 = {0.f,y};
-        vec2 x2 = {100.f,y};
+        vec2 x2 = {600.f,y};
         vec2 y1 = {y,0.f};
-        vec2 y2 = {y,100.f};
-//        vec2 ax1 = getAffine(x1);
+        vec2 y2 = {y,600.f};
 
-//        SDL_RenderDrawLine( gRenderer, 0, y, 600, y);
-//        SDL_RenderDrawLine( gRenderer, y, 0, y, 600);
-        SDL_SetRenderDrawColor(gRenderer, 0xff, 0x11, 0x11, 0);
-        SDL_RenderDrawLine( gRenderer, 0,y,600,y);
-        SDL_RenderDrawLine( gRenderer, y,0,y,600);
+        SDL_SetRenderDrawColor(gRenderer, 0x11, 0x11, 0x11, 0);
+        SDL_RenderDrawLine( gRenderer, x1.x, x1.y, x2.x,x2.y);
+        SDL_RenderDrawLine( gRenderer, y1.x, y1.y, y2.x,y2.y);
 //        std::cout<< "got pos before" <<x1.x << "|" << x1.y << " " <<x2.x << "|" <<x2.y;
 //        std::cout<< "got pos before" <<y1.x << "|" << y1.y << " " <<y2.x << "|" <<y2.y <<std::endl;
         x1 = getAffineVec2(x1);
